@@ -1,6 +1,7 @@
 import json
 import os
 import webbrowser
+import sys
 
 
 class AppRunner():
@@ -15,7 +16,6 @@ class AppRunner():
                 json_data = file.read()
                 try:
                     data = json.loads(json_data)
-                    print(data)
                     self.program_list = data['program_list']
                     self.page_list = set(data['page_list'])
                 except:
@@ -48,7 +48,7 @@ class AppRunner():
                 return
 
     def removePage(self, url: str):
-        if 'https://' in url:
+        if 'https://' not in url:
             url = 'https://' + url
         self.page_list.discard(url)
 
@@ -64,12 +64,4 @@ class AppRunner():
                 os.startfile(path)
         for page in self.page_list:
             webbrowser.open_new_tab(page)
-
-
-a = AppRunner()
-print(a.program_list, a.page_list)
-a.addPage("google.com")
-a.addPage("google.com")
-a.addPage("https://facebook.com")
-print(a.program_list, a.page_list)
-a.run()
+        sys.exit()

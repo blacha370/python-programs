@@ -1,17 +1,64 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-import os
-import tkinter
-import webbrowser
-import json
+import sys
+from AppRunner import AppRunner
+
+Runner = AppRunner()
+
+
+def setUrls():
+    urls_value = str()
+    for program in enumerate(Runner.program_list):
+        if program[0] == 0:
+            urls_value = program[1]['path'] + " " + str(program[1]['amount'])
+        else:
+            urls_value += '\n' + \
+                program[1]['path'] + " " + str(program[1]['amount'])
+    urls.set(urls_value)
+
+
+def setHttps():
+    https_value = str()
+    for page in enumerate(Runner.page_list):
+        if page[0] == 0:
+            https_value = page[1]
+        else:
+            https_value += '\n' + page[1]
+    http_links.set(https_value)
+
+
+def addProgram():
+    url = filedialog.askopenfile().name
+    Runner.addProgram(url)
+    setUrls()
+
+
+def removeProgram():
+    url = filedialog.askopenfile().name
+    Runner.removeProgram(url)
+    setUrls()
+
+
+def addPage():
+    link = http.get()
+    if link != '':
+        http.set('')
+        Runner.addPage(link)
+        setHttps()
+
+
+def removePage():
+    link = http.get()
+    if link != '':
+        http.set('')
+        Runner.removePage(link)
+        setHttps()
 
 
 def run():
-    print(filedialog.askopenfile())
+    Runner.run()
 
-
-run()
 
 root = Tk()
 root.title("Run")
@@ -42,9 +89,8 @@ ttk.Button(mainframe, text="Run", command=run).grid(
 
 for child in mainframe.winfo_children():
     child.grid_configure(padx=5, pady=5)
-root.bind('<Return>', addProgram, run)
+root.bind('<Return>')
 
-
-things_to_run = getUserConfig()
-print(things_to_run)
+setUrls()
+setHttps()
 root.mainloop()
