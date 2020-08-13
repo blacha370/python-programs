@@ -64,4 +64,4 @@ class AppRunner():
                 os.startfile(path)
         for page in self.page_list:
             webbrowser.open_new_tab(page)
-        sys.exit()
+        print(sys.exit())

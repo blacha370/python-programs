@@ -1,31 +1,36 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-import sys
+from functools import partial
 from AppRunner import AppRunner
 
 Runner = AppRunner()
 
 
 def setUrls():
-    urls_value = str()
-    for program in enumerate(Runner.program_list):
-        if program[0] == 0:
-            urls_value = program[1]['path'] + " " + str(program[1]['amount'])
-        else:
-            urls_value += '\n' + \
-                program[1]['path'] + " " + str(program[1]['amount'])
-    urls.set(urls_value)
+    for widget in programs_frame.winfo_children():
+        widget.destroy()
+    for program in Runner.program_list:
+        program_frame = ttk.Frame(programs_frame)
+        program_frame.grid()
+        label = ttk.Label(program_frame, text=program['path'])
+        button = ttk.Button(program_frame, text="Delete",
+                            command=partial(removeProgram, program['path']))
+        label.grid(column=0, row=0)
+        button.grid(column=1, row=0)
 
 
 def setHttps():
-    https_value = str()
-    for page in enumerate(Runner.page_list):
-        if page[0] == 0:
-            https_value = page[1]
-        else:
-            https_value += '\n' + page[1]
-    http_links.set(https_value)
+    for widget in pages_frame.winfo_children():
+        widget.destroy()
+    for page in Runner.page_list:
+        page_frame = ttk.Frame(pages_frame, width=100)
+        page_frame.grid()
+        label = ttk.Label(page_frame, text=page)
+        button = ttk.Button(page_frame, text="Delete",
+                            command=partial(removePage, page))
+        label.grid(column=0, row=0)
+        button.grid(column=1, row=0)
 
 
 def addProgram():
@@ -34,8 +39,7 @@ def addProgram():
     setUrls()
 
 
-def removeProgram():
-    url = filedialog.askopenfile().name
+def removeProgram(url):
     Runner.removeProgram(url)
     setUrls()
 
@@ -48,12 +52,9 @@ def addPage():
         setHttps()
 
 
-def removePage():
-    link = http.get()
-    if link != '':
-        http.set('')
-        Runner.removePage(link)
-        setHttps()
+def removePage(link):
+    Runner.removePage(link)
+    setHttps()
 
 
 def run():
@@ -63,34 +64,40 @@ def run():
 root = Tk()
 root.title("Run")
 root.geometry('800x300')
-mainframe = ttk.Frame(root, padding="3 3 12 12")
-mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
-urls = StringVar()
-http = StringVar()
-http_links = StringVar()
-http_entry = ttk.Entry(mainframe, width=100, textvariable=http)
-http_entry.grid(column=1, row=3, sticky=(W, E))
-ttk.Label(mainframe, textvariable=urls).grid(
-    column=1, row=1, rowspan=2, sticky=(W, E))
-ttk.Label(mainframe, textvariable=http_links, width=100).grid(
-    column=1, row=4, sticky=(W, E))
-ttk.Button(mainframe, text="Add Program", command=addProgram).grid(
-    column=2, row=1, sticky=(W, E))
-ttk.Button(mainframe, text="Remove Program", command=removeProgram).grid(
-    column=2, row=2, sticky=(W, E))
-ttk.Button(mainframe, text="Add Page", command=addPage).grid(
-    column=2, row=3, sticky=(W, E))
-ttk.Button(mainframe, text="Remove Page", command=removePage).grid(
-    column=2, row=4, sticky=(W, E))
-ttk.Button(mainframe, text="Run", command=run).grid(
-    column=2, row=5, sticky=(W, E))
+main_frame = ttk.Frame(root, padding="3 3 12 12")
+main_frame.pack()
 
-for child in mainframe.winfo_children():
-    child.grid_configure(padx=5, pady=5)
+data_frame = ttk.Frame(main_frame, padding='3 3 12 12')
+data_frame.grid(column=0, row=0)
+
+programs_frame = ttk.Frame(data_frame)
+programs_frame.grid(column=0, row=1)
+
+http = StringVar()
+http_entry = ttk.Entry(data_frame, width=100, textvariable=http)
+http_entry.grid(column=0, row=2)
+
+pages_frame = ttk.Frame(data_frame)
+pages_frame.grid(column=0, row=3)
+
+buttonsframe = ttk.Frame(main_frame, padding='3 3 12 12')
+buttonsframe.grid(column=1, row=0)
+
+
+http_links = StringVar()
+
+
+ttk.Button(buttonsframe, text="Add Program",
+           command=addProgram).grid(sticky=(E, W))
+ttk.Button(buttonsframe, text="Add Page", command=addPage).grid(sticky=(E, W))
+ttk.Button(buttonsframe, text="Run", command=run).grid(sticky=(E, W))
+
+
 root.bind('<Return>')
 
 setUrls()
 setHttps()
+
 root.mainloop()
