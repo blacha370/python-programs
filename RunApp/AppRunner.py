@@ -1,27 +1,8 @@
-import json
-import os
-import webbrowser
-import sys
-
 
 class AppRunner():
     def __init__(self):
         self.program_list = list()
         self.page_list = set()
-        self.getUserConfig()
-
-    def getUserConfig(self):
-        try:
-            with open('./data.json', 'r', encoding='UTF-8') as file:
-                json_data = file.read()
-                try:
-                    data = json.loads(json_data)
-                    self.program_list = data['program_list']
-                    self.page_list = set(data['page_list'])
-                except:
-                    pass
-        except FileNotFoundError:
-            pass
 
     def addProgram(self, path: str):
         is_in = False
@@ -51,17 +32,3 @@ class AppRunner():
         if 'https://' not in url:
             url = 'https://' + url
         self.page_list.discard(url)
-
-    def run(self):
-        with open('./data.json', 'w', encoding='UTF-8') as file:
-            data = {"program_list": self.program_list,
-                    "page_list": list(self.page_list)}
-            json_data = json.dumps(data)
-            file.write(json_data)
-        for program in self.program_list:
-            for _ in range(program['amount']):
-                path = program['path']
-                os.startfile(path)
-        for page in self.page_list:
-            webbrowser.open_new_tab(page)
-        print(sys.exit())
