@@ -1,10 +1,7 @@
 from AppGui import Gui
 from Observer import Observer
-from Component import Component
 from AppRunner import AppRunner
-from Monitors import Monitors
-import json
-import webbrowser
+
 
 
 class App:
@@ -14,8 +11,15 @@ class App:
         self.gui = Gui(self.observer)
         self.gui.createGui(self.runner.data)
 
-    def refresh(self, path, resource_to_update):
-        self.runner.remove(resource_to_update, path)
+    def refresh(self, path, resource_to_update, operation):
+        if operation == 'add':
+            self.runner.add(resource_to_update, path)
+        elif operation == 'delete':
+            self.runner.remove(resource_to_update, path)
         self.gui.placeComponents(self.runner.data)
+
+    def run(self):
+        self.runner.saveData()
+
 
 app = App()

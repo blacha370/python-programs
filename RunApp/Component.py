@@ -1,7 +1,7 @@
 from tkinter import ttk
 
 
-class Component():
+class Component:
     def __init__(self, parent, path, amount=0, observer=object):
         self.observer = observer
         self.path = path
@@ -21,9 +21,9 @@ class Component():
 
     def delete(self):
         if self.amount == 0:
-            self.observer.update(self.path, 'pages_list')
+            self.observer.update(self.path, 'pages_list', "delete")
         elif self.amount > 0:
-            self.observer.update(self.path, 'programs_list')
+            self.observer.update(self.path, 'programs_list', 'delete')
 
     def __del__(self):
         pass

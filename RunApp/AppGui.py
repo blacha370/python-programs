@@ -3,6 +3,7 @@ from tkinter import ttk
 from Component import Component
 import win32gui
 import pywintypes
+import random
 
 
 class Gui:
@@ -49,16 +50,16 @@ class Gui:
             self.createButton(button['parent'], button['name'], button['command'], text=button['text'], position=button['position'])
 
     def placeComponents(self, data):
-        components_to_place = {'programs_list': list(), 'pages_list': set()}
+        for child in self.data['elements']['programs_frame'].winfo_children():
+            child.destroy()
+        for child in self.data['elements']['pages_frame'].winfo_children():
+            child.destroy()
         for program in data['programs_list']:
-            if program not in self.data['components']['programs_list']:
-                components_to_place['programs_list'].append(program)
-        components_to_place['pages_list'] = data['pages_list'] - self.data['components']['pages_list']
-        for program in components_to_place['programs_list']:
-            self.programs.add(Component(self.data['elements']['programs_frame'], program['path'], program['amount'], observer=self.observer))
-        for page in components_to_place['pages_list']:
-            self.pages.add(Component(self.data['elements']['pages_frame'], page, observer=self.observer))
-        self.data['components'] = components_to_place
+            component = (Component(self.data['elements']['programs_frame'], program['path'], program['amount'], observer=self.observer))
+            self.data['components']['programs_list'].append({'path': program['path'], 'component': component})
+        for page in data['pages_list']:
+            self.data['components']['pages_list'].add(Component(self.data['elements']['pages_frame'], page, observer=self.observer))
+
 
     def createGui(self, data):
         self.placeElements()
@@ -69,18 +70,17 @@ class Gui:
         try:
             path = win32gui.GetOpenFileNameW()
         except pywintypes.error:
-            path = ''
+            return
         finally:
-            return path
+            self.observer.update(path[0], 'programs_list', 'add')
 
     def addPage(self):
         url = self.data['elements']['url_entry'].get()
         self.data['elements']['url_entry'].delete(0, END)
         if url:
-            if not url.startswith('http://' or 'https://'):
-                url = 'http://' + url
-            return url
+            self.observer.update(url, 'pages_list', 'add')
         return
 
     def exitGui(self):
+        self.observer.run()
         self.root.destroy()
