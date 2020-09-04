@@ -1,7 +1,7 @@
 from AppGui import Gui
 from Observer import Observer
 from AppRunner import AppRunner
-
+from Opener import Opener
 
 
 class App:
@@ -16,10 +16,11 @@ class App:
             self.runner.add(resource_to_update, path)
         elif operation == 'delete':
             self.runner.remove(resource_to_update, path)
-        self.gui.placeComponents(self.runner.data)
+        self.gui.frame.placeComponents(self.runner.data)
 
     def run(self):
         self.runner.saveData()
+        Opener.runOpener(self.runner.data)
 
 
 app = App()
