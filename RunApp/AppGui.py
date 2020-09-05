@@ -1,5 +1,7 @@
 from tkinter import *
 from MainFrame import MainFrame
+from SettingsFrame import SettingsFrame
+import time
 
 
 class Gui:
@@ -19,3 +21,11 @@ class Gui:
     def createGui(self, data):
         self.frame = MainFrame(self.root, self.observer, data)
         self.root.mainloop()
+
+    def swapFrames(self, data):
+        frame = self.frame.name
+        self.frame.destroyFrame()
+        if frame == 'main_frame':
+            self.frame = SettingsFrame(self.root, self.observer, data)
+        if frame == 'settings_frame':
+            self.frame = MainFrame(self.root, self.observer, data)

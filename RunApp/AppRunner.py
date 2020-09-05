@@ -37,9 +37,9 @@ class AppRunner:
             for program in self.data['programs_list']:
                 if program['path'] == path:
                     is_in = True
-                    program['amount'] += 1
+                    program['positions'].append([0, 0, 0, 0])
             if not is_in:
-                self.data['programs_list'].append({'path': path, 'amount': 1})
+                self.data['programs_list'].append({'path': path, 'positions': [[0, 0, 0, 0]]})
         elif type(structure) == set:
             if path in self.data['pages_list']:
                 return
@@ -51,11 +51,9 @@ class AppRunner:
 
     def saveData(self):
         data = ({
-            'pages_list': 'aaa',
+            'pages_list': list(self.data['pages_list']),
             'programs_list': self.data['programs_list']
         })
         data_json = json.dumps(data)
-        print(data_json)
         with open('C:/Users/lukas/Desktop/Python/scripts/RunApp/data.json', 'w') as file:
             file.write(data_json)
-            print('done')
