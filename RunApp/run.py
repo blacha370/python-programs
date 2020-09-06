@@ -22,8 +22,13 @@ class App:
             self.gui.frame.placeComponents(self.runner.data)
 
     def switchFrame(self, data):
-        if data == None:
+        if not data:
             data = self.runner.data
+        else:
+            for program in self.runner.data['programs_list']:
+                if program['path'] == data:
+                    data = program
+                    break
         self.gui.swapFrames(data)
 
     def run(self):

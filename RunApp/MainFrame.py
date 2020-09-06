@@ -4,11 +4,9 @@ import win32gui
 import pywintypes
 import copy
 from Component import Component
-from GuiCreator import GuiCreator
 
 
-
-class MainFrame():
+class MainFrames:
     def __init__(self, root, observer, data):
         self.name = 'main_frame'
         self.observer = observer
@@ -17,13 +15,6 @@ class MainFrame():
             'components': copy.deepcopy(data)
         }
         self.gui_structure = {
-            'elements': ({'widget': ttk.Frame, 'parent': self.data['elements']['root'], 'name': 'main_frame', 'position': (1, 1)},
-                         {'widget': ttk.Frame, 'parent': self.data['elements']['main_frame'], 'name': 'data_frame', 'position': (1, 1)},
-                         {'widget': ttk.Frame, 'parent': self.data['elements']['main_frame'], 'name': 'buttons_frame', 'position': (2, 1)},
-                         {'widget': ttk.Entry, 'parent': self.data['elements']['data_frame'], 'name': 'url_entry', 'position': (1, 1)},
-                         {'widget': ttk.Frame, 'parent': self.data['elements']['data_frame'], 'name': 'pages_frame', 'position': (1, 2)},
-                         {'widget': ttk.Frame, 'parent': self.data['elements']['data_frame'], 'name': 'programs_frame', 'position': (1, 3)}
-                         ),
             'buttons': ({'parent': self.data['elements']['buttons_frame'], 'name': "add_page_button", 'command': self.addPage, "text": 'AddPage', "position": (2, 1)},
                         {'parent': self.data['elements']['buttons_frame'], 'name': "add_program_button", 'command': self.addProgram, "text": 'AddProgram', "position": (2, 2)},
                         {'parent': self.data['elements']['buttons_frame'], 'name': "exit_button", 'command': self.exitGui, "text": "Run", "position": (2, 3)}
@@ -33,10 +24,41 @@ class MainFrame():
         self.placeComponents(data)
 
     def placeElements(self):
-        for element in self.gui_structure['elements']:
-            GuiCreator.createGuiElement(self.data, element['widget'], element['parent'], element['name'], position=element['position'])
-        for button in self.gui_structure['buttons']:
-            GuiCreator.createButton(self.data, button['parent'], button['name'], button['command'], text=button['text'], position=button['position'])
+        main_frame = ttk.Frame(self.data['elements']['root'])
+        self.data['elements']['main_frame'] = main_frame
+        main_frame.grid(column=1, row=1)
+
+        data_frame = ttk.Frame(self.data['elements']['main_frame'])
+        self.data['elements']['data_frame'] = data_frame
+        data_frame.grid(column=1, row=1, sticky='NSWE')
+
+        buttons_frame = ttk.Frame(self.data['elements']['main_frame'])
+        self.data['elements']['buttons_frame'] = buttons_frame
+        buttons_frame.grid(column=2, row=1, sticky='NSWE')
+
+        url_entry = ttk.Entry(self.data['elements']['data_frame'])
+        self.data['elements']['url_entry'] = url_entry
+        url_entry.grid(column=1, row=1, sticky='N')
+
+        pages_frame = ttk.Frame(self.data['elements']['data_frame'])
+        self.data['elements']['pages_frame'] = pages_frame
+        pages_frame.grid(column=1, row=2)
+
+        programs_frame = ttk.Frame(self.data['elements']['data_frame'])
+        self.data['elements']['programs_frame'] = programs_frame
+        programs_frame.grid(column=1, row=3)
+
+        add_page_button = ttk.Button(self.data['elements']['buttons_frame'], text='Add page', command=self.addPage)
+        self.data['elements']['add_page_button'] = add_page_button
+        add_page_button.grid(column=1, row=1, sticky='NSWE')
+
+        add_program_button = ttk.Button(self.data['elements']['buttons_frame'], text='Add program', command=self.addProgram)
+        self.data['elements']['add_program_button'] = add_program_button
+        add_program_button.grid(column=1, row=2, sticky='NSWE')
+
+        exit_button = ttk.Button(self.data['elements']['buttons_frame'], text='Run', command=self.exitGui)
+        self.data['elements']['exit_button'] = exit_button
+        exit_button.grid(column=1, row=3, sticky='NSWE')
 
     def placeComponents(self, data):
         for child in self.data['elements']['programs_frame'].winfo_children():
@@ -69,5 +91,5 @@ class MainFrame():
         self.data['elements']['root'].destroy()
 
     def destroyFrame(self):
-        GuiCreator.destroyFrame(self.data['elements'])
+        self.data['elements']['main_frame'].destroy()
 

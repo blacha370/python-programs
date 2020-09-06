@@ -1,42 +1,89 @@
 from tkinter import ttk
-from GuiCreator import GuiCreator
+from Monitors import Monitors
 
 
 class SettingsFrame:
     def __init__(self, root, observer, data):
         self.name = 'settings_frame'
-        self.path = data
+        self.path = data['path']
+        self.monitors = Monitors.getMonitors()
         self.observer = observer
         self.data = {
-            'elements': {'root': root, 'settings_frame': None, 'settings_notebook': None, 'buttons_frame': None}
+            'elements': {'root': root, 'settings_frame': None, 'cards_frame': None, 'settings_notebook': None, 'buttons_frame': None}
         }
-        self.gui_structure = {
-            'elements': ({'widget': ttk.Frame, 'parent': self.data['elements']['root'], 'name': 'settings_frame', 'position': (1, 1)},
-                         {'widget': ttk.Notebook, 'parent': self.data['elements']['settings_frame'], 'name': 'settings_notebook', 'position': (1, 1)},
-                         {'widget': ttk.Frame, 'parent': self.data['elements']['settings_frame'], 'name': 'buttons_frame', 'position': (3, 1)},
-                         {'widget': ttk.Label, 'parent': self.data['elements']['settings_notebook'], 'name': 'monitor-label', 'position': (1, 1), 'text': 'monitor:'},
-                         {'widget': ttk.Label, 'parent': self.data['elements']['settings_notebook'], 'name': 'x-label', 'position': (1, 2), 'text': 'x:'},
-                         {'widget': ttk.Label, 'parent': self.data['elements']['settings_notebook'], 'name': 'y-label', 'position': (1, 3), 'text': 'y:'},
-                         {'widget': ttk.Label, 'parent': self.data['elements']['settings_notebook'], 'name': 'width-label', 'position': (1, 4), 'text': 'width:'},
-                         {'widget': ttk.Label, 'parent': self.data['elements']['settings_notebook'], 'name': 'height-label', 'position': (1, 5), 'text': 'height:'},
-                         {'widget': ttk.Combobox, 'parent': self.data['elements']['settings_notebook'], 'name': 'monitor_combobox', 'position': (2, 1)},
-                         {'widget': ttk.Spinbox, 'parent': self.data['elements']['settings_notebook'], 'name': 'x_entry', 'position': (2, 2)},
-                         {'widget': ttk.Spinbox, 'parent': self.data['elements']['settings_notebook'], 'name': 'y_entry', 'position': (2, 3)},
-                         {'widget': ttk.Spinbox, 'parent': self.data['elements']['settings_notebook'], 'name': 'width_entry', 'position': (2, 4)},
-                         {'widget': ttk.Spinbox, 'parent': self.data['elements']['settings_notebook'], 'name': 'height_entry', 'position': (2, 5)},
-                         {'widget': ttk.Frame, 'parent': self.data['elements']['settings_frame'], 'name': 'programs_frame', 'position': (1, 2)},
-                         {'widget': ttk.Frame, 'parent': self.data['elements']['settings_frame'], 'name': 'pages_frame', 'position': (1, 3)}
-                         ),
-            'buttons': ({'parent': self.data['elements']['buttons_frame'], 'name': "save_button", 'command': self.saveData, "text": "Save", "position": (3, 1)},
-                        {'parent': self.data['elements']['buttons_frame'], 'name': "delete_button", 'command': self.delete, "text": "Delete", "position": (3, 2)})
-        }
-        self.placeElements()
+        self.placeElements(data['positions'])
 
-    def placeElements(self):
-        for element in self.gui_structure['elements']:
-            GuiCreator.createGuiElement(self.data, element['widget'], element['parent'], element['name'], position=element['position'], text=element.get('text'))
-        for button in self.gui_structure['buttons']:
-            GuiCreator.createButton(self.data, button['parent'], button['name'], button['command'], text=button['text'], position=button['position'])
+    def placeElements(self, positions):
+        settings_frame = ttk.Frame(self.data['elements']['root'])
+        self.data['elements']['settings_frame'] = settings_frame
+        settings_frame.grid(column=1, row=1)
+
+        tabs_frame = ttk.Frame(self.data['elements']['settings_frame'])
+        self.data['elements']['tabs_frame'] = tabs_frame
+        tabs_frame.grid(column=1, row=1, columnspan=2)
+
+        settings_notebook = ttk.Notebook(self.data['elements']['settings_frame'])
+        self.data['elements']['settings_notebook'] = settings_notebook
+        settings_notebook.grid(column=1, row=2)
+
+        buttons_frame = ttk.Notebook(self.data['elements']['settings_frame'])
+        self.data['elements']['buttons_frame'] = buttons_frame
+        buttons_frame.grid(column=2, row=2)
+
+        i = 0
+        for position in positions:
+            i += 1
+            tab_button = ttk.Button(self.data['elements']['tabs_frame'], text='tab')
+            self.data['elements'][str(position)] = tab_button
+            tab_button.grid(column=i, row=1)
+
+        monitors_label = ttk.Label(self.data['elements']['settings_notebook'], text='Monitor:')
+        self.data['elements']['monitors_label'] = monitors_label
+        monitors_label.grid(column=1, row=1)
+
+        monitors_combobox = ttk.Combobox(self.data['elements']['settings_notebook'])
+        self.data['elements']['monitors_combobox'] = monitors_combobox
+        monitors_combobox.grid(column=2, row=1)
+
+        x_label = ttk.Label(self.data['elements']['settings_notebook'], text='X:')
+        self.data['elements']['x_label'] = x_label
+        x_label.grid(column=1, row=2)
+
+        x_spinbox = ttk.Spinbox(self.data['elements']['settings_notebook'])
+        self.data['elements']['x_spinbox'] = x_spinbox
+        x_spinbox.grid(column=2, row=2)
+
+        y_label = ttk.Label(self.data['elements']['settings_notebook'], text='Y:')
+        self.data['elements']['y_label'] = y_label
+        y_label.grid(column=1, row=3)
+
+        y_spinbox = ttk.Spinbox(self.data['elements']['settings_notebook'])
+        self.data['elements']['y_spinbox'] = y_spinbox
+        y_spinbox.grid(column=2, row=3)
+
+        width_label = ttk.Label(self.data['elements']['settings_notebook'], text='Width:')
+        self.data['elements']['width_label'] = width_label
+        width_label.grid(column=1, row=4)
+
+        width_spinbox = ttk.Spinbox(self.data['elements']['settings_notebook'])
+        self.data['elements']['width_spinbox'] = width_spinbox
+        width_spinbox.grid(column=2, row=4)
+
+        height_label = ttk.Label(self.data['elements']['settings_notebook'], text='Height:')
+        self.data['elements']['height_label'] = height_label
+        height_label.grid(column=1, row=5)
+
+        height_spinbox = ttk.Spinbox(self.data['elements']['settings_notebook'])
+        self.data['elements']['height_spinbox'] = height_spinbox
+        height_spinbox.grid(column=2, row=5)
+
+        delete_button = ttk.Button(self.data['elements']['buttons_frame'], text='Delete', command=self.delete)
+        self.data['elements']['delete_button'] = delete_button
+        delete_button.grid(column=1, row=1)
+
+        save_button = ttk.Button(self.data['elements']['buttons_frame'], text='Save', command=self.saveData)
+        self.data['elements']['save_button'] = save_button
+        save_button.grid(column=1, row=2)
 
     def delete(self):
         self.observer.update(self.path, 'programs_list', 'delete')
@@ -45,4 +92,4 @@ class SettingsFrame:
         self.observer.switchFrame(None)
 
     def destroyFrame(self):
-        GuiCreator.destroyFrame(self.data['elements'])
+        self.data['elements']['settings_frame'].destroy()

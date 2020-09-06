@@ -1,7 +1,6 @@
 from tkinter import *
 from MainFrame import MainFrame
 from SettingsFrame import SettingsFrame
-import time
 
 
 class Gui:
