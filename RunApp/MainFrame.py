@@ -6,7 +6,7 @@ import copy
 from Component import Component
 
 
-class MainFrames:
+class MainFrame:
     def __init__(self, root, observer, data):
         self.name = 'main_frame'
         self.observer = observer

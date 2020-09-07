@@ -1,7 +1,7 @@
 from AppGui import Gui
 from Observer import Observer
 from AppRunner import AppRunner
-#from Opener import Opener
+from Opener import Opener
 
 
 class App:
@@ -31,9 +31,10 @@ class App:
                     break
         self.gui.swapFrames(data)
 
+
     def run(self):
         self.runner.saveData()
-        #Opener.runOpener(self.runner.data)
+        Opener.runOpener(self.runner.data)
 
 
 app = App()

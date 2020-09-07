@@ -23,7 +23,6 @@ class Component:
             self.button.grid(column=2, row=0, sticky='E')
         self.name_label = ttk.Label(self.component, text=self.path)
         self.name_label.grid(column=1, row=0, sticky='W')
-        print(type(self.positions))
     def edit(self):
         if type(self.positions) == int:
             self.observer.update(self.path, 'pages_list', "delete")
