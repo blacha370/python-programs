@@ -37,9 +37,9 @@ class AppRunner:
             for program in self.data['programs_list']:
                 if program['path'] == path:
                     is_in = True
-                    program['positions'].append([0, 0, 0, 0])
+                    program['positions'].append([300, 300, 300, 300])
             if not is_in:
-                self.data['programs_list'].append({'path': path, 'positions': [[0, 0, 0, 0]]})
+                self.data['programs_list'].append({'path': path, 'positions': [[300, 300, 300, 300]]})
         elif type(structure) == set:
             if path in self.data['pages_list']:
                 return
@@ -48,6 +48,11 @@ class AppRunner:
                     self.data['pages_list'].add(path)
                 elif 'https://' not in path:
                     self.data['pages_list'].add('https://' + path)
+
+    def changePosition(self, path, position, index):
+        for program in self.data['programs_list']:
+            if program['path'] == path:
+                program['positions'][index] = position
 
     def saveData(self):
         data = ({

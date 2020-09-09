@@ -4,6 +4,7 @@ import win32gui
 import pywintypes
 import copy
 from Component import Component
+from Window import Window
 
 
 class MainFrame:
@@ -56,9 +57,14 @@ class MainFrame:
         self.data['elements']['add_program_button'] = add_program_button
         add_program_button.grid(column=1, row=2, sticky='NSWE')
 
+        place_programs_button = ttk.Button(self.data['elements']['buttons_frame'], text='Place programs',
+                                           command=self.placePrograms)
+        self.data['elements']['place_programs_button'] = place_programs_button
+        place_programs_button.grid(column=1, row=3, sticky='NSWE')
+
         exit_button = ttk.Button(self.data['elements']['buttons_frame'], text='Run', command=self.exitGui)
         self.data['elements']['exit_button'] = exit_button
-        exit_button.grid(column=1, row=3, sticky='NSWE')
+        exit_button.grid(column=1, row=4, sticky='NSWE')
 
     def placeComponents(self, data):
         for child in self.data['elements']['programs_frame'].winfo_children():
@@ -67,7 +73,6 @@ class MainFrame:
             child.destroy()
         for program in data['programs_list']:
             component = (Component(self.data['elements']['programs_frame'], program['path'], program['positions'], observer=self.observer))
-            self.data['components']['programs_list'].append({'path': program['path'], 'component': component})
         for page in data['pages_list']:
             self.data['components']['pages_list'].add(Component(self.data['elements']['pages_frame'], page, observer=self.observer))
 
@@ -85,6 +90,22 @@ class MainFrame:
         if url:
             self.observer.update(url, 'pages_list', 'add')
         return
+
+    def placePrograms(self, path=''):
+        if path == '':
+            for program in self.data['components']['programs_list']:
+                i = 0
+                for position in program['positions']:
+                    Window(program['path'], position, i, observer=self.observer)
+                    i += 1
+        else:
+            for program in self.data['components']['programs_list']:
+                if program['path'] == path:
+                    i = 0
+                    for position in program['positions']:
+                        Window(program['path'], position, i, observer=self.observer)
+                        i += 1
+                    break
 
     def exitGui(self):
         self.observer.run()

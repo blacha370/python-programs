@@ -11,7 +11,7 @@ class App:
         self.gui = Gui(self.observer)
         self.gui.createGui(self.runner.data)
 
-    def refresh(self, path, resource_to_update, operation):
+    def refresh(self, path, resource_to_update, operation, position, index):
         if operation == 'add':
             self.runner.add(resource_to_update, path)
             self.gui.frame.placeComponents(self.runner.data)
@@ -20,17 +20,11 @@ class App:
             if self.gui.frame.name == 'settings_frame':
                 self.switchFrame(self.runner.data)
             self.gui.frame.placeComponents(self.runner.data)
+        elif operation == 'position':
+            self.runner.changePosition(path, position, index)
 
-    def switchFrame(self, data):
-        if not data:
-            data = self.runner.data
-        else:
-            for program in self.runner.data['programs_list']:
-                if program['path'] == data:
-                    data = program
-                    break
-        self.gui.swapFrames(data)
-
+    def openPositionWindow(self, path):
+        self.gui.frame.placePrograms(path)
 
     def run(self):
         self.runner.saveData()
