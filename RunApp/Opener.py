@@ -41,4 +41,3 @@ class Opener:
     def runPages(pages):
         for page in pages:
             webbrowser.open_new_tab(page)
-

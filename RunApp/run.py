@@ -17,8 +17,6 @@ class App:
             self.gui.frame.placeComponents(self.runner.data)
         elif operation == 'delete':
             self.runner.remove(resource_to_update, path)
-            if self.gui.frame.name == 'settings_frame':
-                self.switchFrame(self.runner.data)
             self.gui.frame.placeComponents(self.runner.data)
         elif operation == 'position':
             self.runner.changePosition(path, position, index)
@@ -28,6 +26,7 @@ class App:
 
     def run(self):
         self.runner.saveData()
+        self.gui.destroyGui()
         Opener.runOpener(self.runner.data)
 
 

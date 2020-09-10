@@ -7,7 +7,7 @@ class Monitors:
         displays = win32api.EnumDisplayMonitors()
         monitors = list()
         for display in displays:
-            monitors.append((display[2]))
+            monitors.append(win32api.GetMonitorInfo(display[0])['Work'])
         return monitors
 
     @staticmethod
@@ -16,6 +16,6 @@ class Monitors:
         for monitor in monitors:
             if monitor[0] <= x < monitor[2] and monitor[1] <= y < monitor[3]:
                 return monitor
-            if x < monitor[0]:
+            elif x < monitor[0]:
                 return monitor
-        return monitor[0]
+            return monitor[0]

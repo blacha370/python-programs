@@ -1,5 +1,6 @@
 import json
 
+
 class AppRunner:
     def __init__(self):
         self.data = {'programs_list': list(), 'pages_list': set()}
@@ -37,9 +38,9 @@ class AppRunner:
             for program in self.data['programs_list']:
                 if program['path'] == path:
                     is_in = True
-                    program['positions'].append([300, 300, 300, 300])
+                    program['positions'].append([0, 0, 300, 300])
             if not is_in:
-                self.data['programs_list'].append({'path': path, 'positions': [[300, 300, 300, 300]]})
+                self.data['programs_list'].append({'path': path, 'positions': [[0, 0, 300, 300]]})
         elif type(structure) == set:
             if path in self.data['pages_list']:
                 return
