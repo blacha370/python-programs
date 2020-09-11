@@ -22,7 +22,6 @@ class App:
     def run(self, position):
         os.makedirs(self.dir + '/withlogo', exist_ok=True)
         ImageEditor.iterateImages(self.images, self.logo, self.dir, position)
-        print('done')
 
 
 a = App()

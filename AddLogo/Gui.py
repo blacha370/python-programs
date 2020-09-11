@@ -8,7 +8,7 @@ class Gui:
     def __init__(self, observer):
         self.logo = str()
         self.dir = str()
-        self.position = (0, 0)
+        self.position = [0, 0]
         self.img_size = int()
         self.observer = observer
         self.root = Tk()
