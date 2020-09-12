@@ -1,14 +1,17 @@
 import json
+import os
 
 
 class AppRunner:
     def __init__(self):
+        os.makedirs(os.environ['USERPROFILE'] + '\\app_runner_data', exist_ok=True)
+        self.path = os.environ['USERPROFILE'] + '\\app_runner_data\\app_data.json'
         self.data = {'programs_list': list(), 'pages_list': set()}
         self.getUserConfig()
 
     def getUserConfig(self):
         try:
-            with open('C:/Users/lukas/Desktop/Python/scripts/RunApp/data.json', 'r', encoding='UTF-8') as file:
+            with open(self.path, 'r', encoding='UTF-8') as file:
                 json_data = file.read()
                 try:
                     data = json.loads(json_data)
@@ -61,5 +64,5 @@ class AppRunner:
             'programs_list': self.data['programs_list']
         })
         data_json = json.dumps(data)
-        with open('C:/Users/lukas/Desktop/Python/scripts/RunApp/data.json', 'w') as file:
+        with open(self.path, 'w') as file:
             file.write(data_json)

@@ -18,4 +18,3 @@ class Monitors:
                 return monitor
             elif x < monitor[0]:
                 return monitor
-            return monitor[0]

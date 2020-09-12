@@ -30,4 +30,4 @@ class App:
         Opener.runOpener(self.runner.data)
 
 
-app = App()
+a = App()

@@ -1,5 +1,5 @@
-from tkinter import *
 from MainFrame import MainFrame
+from tkinter import *
 
 
 class Gui:

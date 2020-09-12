@@ -1,9 +1,8 @@
 from tkinter import *
-from tkinter import ttk
 import win32gui
-import pywintypes
 from Component import Component
 from Window import Window
+from threading import Thread
 
 
 class MainFrame:
@@ -12,16 +11,16 @@ class MainFrame:
         self.observer = observer
         self.data = data
         self.root = root
-        self.main_frame = ttk.Frame(self.root)
-        self.data_frame = ttk.Frame(self.main_frame)
-        self.buttons_frame = ttk.Frame(self.main_frame)
-        self.url_entry = ttk.Entry(self.data_frame)
-        self.pages_frame = ttk.Frame(self.data_frame)
-        self.programs_frame = ttk.Frame(self.data_frame)
-        self.add_page_button = ttk.Button(self.buttons_frame, text='Add page', command=self.addPage)
-        self.add_program_button = ttk.Button(self.buttons_frame, text='Add program', command=self.addProgram)
-        self.place_programs_button = ttk.Button(self.buttons_frame, text='Place programs', command=self.placePrograms)
-        self.exit_button = ttk.Button(self.buttons_frame, text='Run', command=self.exitGui)
+        self.main_frame = Frame(self.root)
+        self.data_frame = Frame(self.main_frame)
+        self.buttons_frame = Frame(self.main_frame)
+        self.url_entry = Entry(self.data_frame)
+        self.pages_frame = Frame(self.data_frame)
+        self.programs_frame = Frame(self.data_frame)
+        self.add_page_button = Button(self.buttons_frame, text='Add page', command=self.addPage)
+        self.add_program_button = Button(self.buttons_frame, text='Add program', command=self.addProgram)
+        self.place_programs_button = Button(self.buttons_frame, text='Place programs', command=self.placePrograms)
+        self.exit_button = Button(self.buttons_frame, text='Run', command=self.exitGui)
         self.placeElements()
         self.placeComponents(data)
 
@@ -52,7 +51,7 @@ class MainFrame:
         try:
             path = win32gui.GetOpenFileNameW()
             self.observer.update(path[0], 'programs_list', 'add')
-        except pywintypes.error:
+        finally:
             return
 
     def addPage(self):
@@ -67,14 +66,16 @@ class MainFrame:
             for program in self.data['programs_list']:
                 i = 0
                 for position in program['positions']:
-                    Window(program['path'], position, i, observer=self.observer)
+                    t = Thread(target=lambda: Window(program['path'], position, i, observer=self.observer))
+                    t.start()
                     i += 1
         else:
             for program in self.data['programs_list']:
                 if program['path'] == path:
                     i = 0
                     for position in program['positions']:
-                        Window(program['path'], position, i, observer=self.observer)
+                        t = Thread(target=lambda: Window(program['path'], position, i, observer=self.observer))
+                        t.start()
                         i += 1
                     break
 
