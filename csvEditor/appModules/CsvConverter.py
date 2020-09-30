@@ -9,7 +9,7 @@ class CsvConverter:
             reader = csv.reader(csvfile)
             csv.register_dialect('dialect_name', delimiter=delimiter, quoting=quoting, skipinitialspace=True,
                                  lineterminator='\n')
-            with open(file_url[:-4] + '_new.csvEditor', mode='w', encoding=encoding) as file:
+            with open(file_url[:-4] + '_new.csv', mode='w', encoding=encoding) as file:
                 writer = csv.writer(file, dialect='dialect_name')
                 for row in reader:
                     writer.writerow(row)

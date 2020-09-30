@@ -16,7 +16,7 @@ class Gui:
         self.main_frame.rowconfigure(1, weight=1)
         self.main_frame.grid(column=1, row=1)
 
-        self.files_frame = Frame(master=self.main_frame)
+        self.files_frame = Frame(master=self.main_frame, bg='gray', bd=2)
         self.files_frame.grid(column=1, row=1, sticky='N')
 
         self.options_frame = Frame(master=self.main_frame)
@@ -66,7 +66,8 @@ class Gui:
 
     def add_file(self):
         path = filedialog.askopenfilename()
-        if path.endswith('.csvEditor'):
+        print(path)
+        if path.endswith('.csv'):
             if path not in self.files:
                 self.create_file_element(path)
             self.files.add(path)
