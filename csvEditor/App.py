@@ -1,4 +1,4 @@
-from Gui import Gui
+from csvEditor.appModules.Gui import Gui
 
 
 class App:
