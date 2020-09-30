@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter import filedialog
-from FileElement import FileElement
-from Observer import Observer
-from CsvConverter import CsvConverter
+from csvEditor.appModules.FileElement import FileElement
+from csvEditor.appModules.Observer import Observer
+from csvEditor.appModules.CsvConverter import CsvConverter
 import gc
 
 
