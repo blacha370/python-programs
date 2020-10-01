@@ -10,12 +10,16 @@ class Gui:
     def __init__(self):
         self.observer = Observer(self)
         self.root = Tk()
+        self.root.title('csv converter')
+        self.dict = None
 
         self.files = set()
         self.quoting = IntVar()
         self.delimiter = StringVar()
 
         self.main_frame = Frame(master=self.root, bd=2)
+        self.dict_frame = Frame(master=self.main_frame)
+        self.dict_label = Label(master=self.dict_frame)
         self.files_frame = Frame(master=self.main_frame, bd=2, width=300)
         self.options_frame = Frame(master=self.main_frame)
         self.delimiter_frame = Frame(master=self.options_frame)
@@ -31,6 +35,7 @@ class Gui:
         self.numeric_quoting = Checkbutton(master=self.quoting_frame, variable=self.quoting, text='liczby', onvalue=2)
         self.none_quoting = Checkbutton(master=self.quoting_frame, variable=self.quoting, text='nic', onvalue=3)
         self.btn_frame = Frame(master=self.main_frame)
+        self.folder_btn = Button(master=self.btn_frame, text='Wybierz folder', command=self.ask_dict)
         self.add_btn = Button(master=self.btn_frame, text='Dodaj plik', command=self.ask_file_name)
         self.add_many_btn = Button(master=self.btn_frame, text='Dodaj pliki', command=self.ask_files_names)
         self.convert_btn = Button(master=self.btn_frame, text='Konwertuj', command=self.convert_csv)
@@ -49,8 +54,10 @@ class Gui:
 
     def place_elements(self):
         self.main_frame.grid(column=1, row=1)
-        self.files_frame.grid(column=1, row=1, sticky='N')
-        self.options_frame.grid(column=2, row=1, sticky='N')
+        self.dict_frame.grid(column=1, row=1, columnspan=3)
+        self.dict_label.grid()
+        self.files_frame.grid(column=1, row=2, sticky='N')
+        self.options_frame.grid(column=2, row=2, sticky='N')
         self.delimiter_frame.grid(column=1, row=1, sticky='WE')
         self.delimiter_label.grid(column=1, row=1, columnspan=2, sticky='W')
         self.comma_delimiter.grid(column=1, row=2, sticky='N')
@@ -61,10 +68,11 @@ class Gui:
         self.all_quoting.grid(sticky='W')
         self.numeric_quoting.grid(sticky='W')
         self.none_quoting.grid(sticky='W')
-        self.btn_frame.grid(column=3, row=1, sticky='S')
-        self.add_btn.grid(row=1, stick='WE')
-        self.add_many_btn.grid(row=2, stick='WE')
-        self.convert_btn.grid(row=3, stick='WE')
+        self.btn_frame.grid(column=3, row=2, sticky='S')
+        self.folder_btn.grid(row=1, sticky='WE')
+        self.add_btn.grid(row=2, sticky='WE')
+        self.add_many_btn.grid(row=3, sticky='WE')
+        self.convert_btn.grid(row=4, sticky='WE')
 
     def set_variables(self):
         self.quoting.set(0)
@@ -75,6 +83,10 @@ class Gui:
             if path not in self.files:
                 self.create_file_element(path)
             self.files.add(path)
+
+    def ask_dict(self):
+        self.dict = filedialog.askdirectory()
+        self.dict_label['text'] = 'Folder: ' + self.dict
 
     def ask_file_name(self):
         path = filedialog.askopenfilename()
@@ -100,6 +112,6 @@ class Gui:
         for obj in gc.get_objects():
             if isinstance(obj, FileElement):
                 self.files.remove(obj.path)
-                CsvConverter.edit_file(obj.path, self.delimiter.get(), self.quoting.get(), obj.encoding)
+                CsvConverter.edit_file(obj.path, self.delimiter.get(), self.quoting.get(), obj.encoding, self.dict)
                 obj.file_frame.destroy()
                 del obj
