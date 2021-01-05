@@ -1,51 +1,52 @@
-import openpyxl
+from mysql.connector import connect, Error
 import requests
 import time
+import datetime
 
 
-class CopyExcel:
-    def __init__(self, src):
-        self.wb = openpyxl.load_workbook(src)
-        self.ws = self.wb.worksheets[0]
-        self.dest = src
+HOST = 'HOST'
+USER = 'USER'
+PASSWORD = 'PASSWORD'
+DATABASE = 'DATABASE'
+API_KEY = 'API_KEY'
 
-    def write_workbook(self, row_dest, column_dest, value):
-        c = self.ws.cell(row=row_dest, column=column_dest)
-        c.value = value
+results = []
 
-    def save_excel(self):
-        self.wb.save(self.dest)
+try:
+    with connect(host=HOST, user=USER, password=PASSWORD, database=DATABASE) as connection:
+        with connection.cursor(dictionary=True, buffered=True) as cursor:
+            cursor.execute("SELECT * FROM status WHERE status <> 'delivered'")
+            results = cursor.fetchall()
+except Error as e:
+    print(e)
 
+headers = {'Accept': 'application/json', 'DHL-API-Key': API_KEY}
+done = [33, 66, 100]
 
-filename = 'file_path'
-copy = CopyExcel(filename)
-treking_column = None
-for col in range(copy.ws.min_column, copy.ws.max_column):
-    if copy.ws.cell(1, col).value == 'Numer trekingowy':
-        treking_column = col
-        break
+i = 1
 
-treking_numbers = []
-for row in range(2, copy.ws.max_row):
-    if type(copy.ws.cell(row, treking_column).value) == int:
-        if copy.ws.cell(row, 12).value != "The shipment has been successfully delivered":
-            treking_numbers.append(copy.ws.cell(row, treking_column).value)
-
-headers = {'Accept': 'application/json', 'DHL-API-Key': 'API-KEY'}
-for number in treking_numbers:
-    r = requests.get('https://api-eu.dhl.com/track/shipments?trackingNumber={}&language=en&limit=1'.format(number),
+for result in results:
+    r = requests.get('https://api-eu.dhl.com/track/shipments?trackingNumber={}&language=en&limit=1'.format(result['trackingid']),
                      headers=headers)
-    try:
-        r.json()['status']
-    except KeyError:
-        status = r.json()['shipments'][0]['status']['description']
-        date = r.json()['shipments'][0]['status']['timestamp'].split('T')[0]
-        data = {'number': number, 'status': status, 'date': date}
-        for row in range(2, copy.ws.max_row):
-            if copy.ws.cell(row, treking_column).value == data['number']:
-                copy.write_workbook(row_dest=row, column_dest=12, value=data['status'])
-                copy.write_workbook(row_dest=row, column_dest=13, value=data['date'])
-                copy.save_excel()
-                break
+    status = r.json()['shipments'][0]['status']
+    if status['statusCode'] != result['status']:
+        try:
+            with connect(host=HOST, user=USER, password=PASSWORD, database=DATABASE) as connection:
+                with connection.cursor(dictionary=True, buffered=True) as cursor:
+                    date = status['timestamp'][:status['timestamp'].index('T')]
+                    date_object = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+                    perc = '0'
+                    if status['statusCode'] == 'pre-transit':
+                        perc = done[0]
+                    elif status['statusCode'] == 'transit':
+                        perc = done[1]
+                    elif status['statusCode'] == 'delivered':
+                        perc = done[2]
+                    sql = "UPDATE status SET status = '{0}', zrobione = '{1}', datadelivery = '{2}' WHERE id = '{3}'".format(status['statusCode'], perc, date_object, result['id'])
+                    cursor.execute(sql)
+                    connection.commit()
+        except Error as e:
+            print(e)
+    print('{0}/{1}'.format(i, len(results)))
+    i += 1
     time.sleep(2)
-    print('{}/{}'.format(treking_numbers.index(number) + 1, len(treking_numbers)))
